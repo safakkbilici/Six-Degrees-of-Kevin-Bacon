@@ -23,3 +23,11 @@ The computation of a Bacon number for actor X is a "shortest path" algorithm, ap
 - Algorithm converts data into Undirected Bipartite Graph after find that what is the Vertex number of this graph.
 - After graph is made, Breadth First Search is used for finding what is Bacon number of every single actor.
 - Breadth First Search is also used for what is the shortest connection map distance between a specific actor and Kevin Bacon.
+
+## Run
+```bash
+chmod +x run.sh
+./run.sh
+```
+## References 
+- https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon
