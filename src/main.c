@@ -3,7 +3,7 @@
 #include<string.h>
 #include<uchar.h>
 char storage[190000][200];
-
+int moviectrl[190000];
 struct node{
 	int vertex;
 	char movie_actor[200];
@@ -26,7 +26,6 @@ struct queue{
 typedef struct queue QUEUE;
 typedef struct node NODE;
 typedef struct graph GRAPH;
-
 int numberOfVertex(FILE*);
 NODE* createNode(int,char*);
 GRAPH* createGraph(int);
@@ -36,11 +35,11 @@ void enqueue(QUEUE**,int,char*);
 QUEUE* dequeue(QUEUE**);
 void BreadthFirstSearch(GRAPH**,char*,int,int*,int*);
 int findMaxDistance(int,int*);
-int* frequencyListOfKevinBaconNumbers(int,int,int*);
+int* frequencyListOfKevinBaconNumbers(GRAPH*,int,int,int*);
 void shortestDistance(GRAPH*,char*,int,int*,int*,char*);
 void specificBreadthFirstSearch(GRAPH**,char*,char*,int,int*,int*);
+int searchInformation(char*);
 int main(int argc, char** argv){
-
 	char filename[100];
 	printf("Enter the file name: ");
   scanf("%s",filename);
@@ -52,7 +51,9 @@ int main(int argc, char** argv){
 	printf("\n");
 
 	int i;
+	printf("It can take minutes, calculating...");
 	int n = numberOfVertex(fp);
+	printf("%d\n",n);
 	int* parent = (int*)malloc(n*sizeof(int));
 	for(i =0; i<n; i++){
 		parent[i] = -1;
@@ -62,13 +63,13 @@ int main(int argc, char** argv){
 	BreadthFirstSearch(&_graph,"Bacon, Kevin",n,visited,parent);
 	int max = findMaxDistance(n,visited);
 	int* frequency = (int*)calloc(max,sizeof(int));
-	frequency = frequencyListOfKevinBaconNumbers(max,n,visited);
+	frequency = frequencyListOfKevinBaconNumbers(_graph,max,n,visited);
 	printf("\n");
 	char destination_actor[100];
 	printf("----------------------------------------------------------------------------------------------------\n");
 	printf("Actor name and surname must be given as: Surname, Name.\n");
 	printf("Enter the actor's/actress's name to find connection map between Kevin Bacon: ");
-	scanf("%[^\n]s",destination_actor);
+	scanf(" %[^\n]s",destination_actor);
 	printf("----------------------------------------------------------------------------------------------------");
 	printf("\n");
 	while(strcmp(destination_actor,"quit") != 0){
@@ -113,6 +114,10 @@ GRAPH* addEdge(int nVertices,char filename[]){
 	char movie_buffer[100];
 	char buffer[10000];
 	int i=0;
+	for(i=0; i<nVertices; i++){
+		moviectrl[i] = -1;
+	}
+	i = 0;
 	int j=0;
 	while(fgets(buffer,10000,fp)){
 		int ctrlMovie = 0;
@@ -123,12 +128,14 @@ GRAPH* addEdge(int nVertices,char filename[]){
 		while(strcmp(storage[j],movie_buffer)!=0 && j<nVertices){
 			j++;
 		}
+		moviectrl[j] = 1;
 		while(ptr2!=NULL){
 			ptr2= strtok(NULL,"/");
 			if(ptr2!=NULL){
 				while(strcmp(storage[i],ptr2)!=0 && i<nVertices){
 					i++;
 				}
+				moviectrl[i] = 0;
 				newNode = createNode(i,ptr2);
 				newNode->next = _graph->adjList[j];
 				_graph->adjList[j] = newNode;
@@ -148,7 +155,7 @@ GRAPH* addEdge(int nVertices,char filename[]){
 	}
 	return _graph;
 }
-/*
+
 int numberOfVertex(FILE* fp){
 	int nVertex=0;
 	char* ptr1;
@@ -157,7 +164,6 @@ int numberOfVertex(FILE* fp){
 	int i=0;
 	int j=0;
 	while(fgets(buffer,10000,fp)){
-		printf("%d\n",nVertex);
 		ptr1=strtok(buffer,"\n");
 		ptr2=strtok(ptr1,"/");
 		while(ptr2!=NULL){
@@ -174,7 +180,8 @@ int numberOfVertex(FILE* fp){
 		}
 	}
 	return nVertex;
-}*/
+}
+/*
 int numberOfVertex(FILE* fp){
 	int nVertex=0;
 	char ch;
@@ -214,8 +221,8 @@ int numberOfVertex(FILE* fp){
 		}
 	}
 	printf("\n");
-	return nVertex;
-}
+	return nVertex-1;
+}*/
 void printGraph(GRAPH* _graph, int n){
   GRAPH* current = _graph;
 	int i;
@@ -304,15 +311,25 @@ void BreadthFirstSearch(GRAPH** _graph, char actor[100], int n,int* visited,int*
 	}
 }
 
-int* frequencyListOfKevinBaconNumbers(int max,int n,int* visited){
-	int i;
-	int* frequency = (int*)calloc(max,sizeof(int));
+int* frequencyListOfKevinBaconNumbers(GRAPH* _graph,int max,int n,int* visited){
+	int i,j;
+	GRAPH* current = _graph;
+	int* frequency = (int*)calloc(max+1,sizeof(int));
+	j = 0;
 	for(i=0; i<n; i++){
-		frequency[visited[i]] = frequency[visited[i]] + 1;
+		if(moviectrl[i] == 0){
+		 frequency[visited[i]] = frequency[visited[i]] + 1;
+		}
 	}
 	printf("---------------------------------------------\n");
-	for(i=0; i<max; i++){
-		printf("%d actors/actress: %d Kevin Bacon Number.\n",frequency[i],i);
+	printf("Kevin Bacon has 0 Kevin Bacon Number.\n");
+	for(i=0; i<max+1; i++){
+		if(i!=0){
+			printf("%d actors/actress: %d Kevin Bacon Number.\n",frequency[i],i);
+		}
+		else{
+			printf("%d actors/actress: Infinite Kevin Bacon Number.\n",frequency[i]-1);
+		}
 	}
 	printf("---------------------------------------------\n");
 	return frequency;
@@ -320,11 +337,19 @@ int* frequencyListOfKevinBaconNumbers(int max,int n,int* visited){
 
 int findMaxDistance(int n,int* visited){
 	int i;
-	int max = visited[0]/2;
+	int max;
+	int start = 0;
 	for(i=0; i<n; i++){
-		visited[i] = visited[i] / 2;
-		if(max<= visited[i]){
+		if(moviectrl[i] == 0 && start == 0){
+			visited[i] = visited[i]/2;
 			max = visited[i];
+			start++;
+		}
+		if(moviectrl[i] == 0 && start !=0){
+			visited[i] = visited[i]/2;
+			if(max< visited[i]){
+			max = visited[i];
+			}
 		}
 	}
 	return max;
@@ -335,27 +360,33 @@ void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* par
 	GRAPH* current = _graph;
 	int path[10000];
 	int pathIndex=0;
+	int filectrl = 0;
+	char buffer[200];
 	i = 0;
 	while(i<n && strcmp(storage[i],destination_actor) != 0){
 		i++;
 	}
 	if(i == n){
-		printf("The name %s cannot be found in movie data!",destination_actor);
-		return;
+		printf("The name %s cannot be found in movie data!\n",destination_actor);
 	}
-	int distance = i;
-	path[pathIndex] = i;
-	pathIndex++;
-	while(parent[i] != -1){
-		path[pathIndex] = parent[i];
+	else if(strcmp(destination_actor,"Bacon, Kevin") == 0){
+		printf("Kevin Bacon's Kevin Bacon Number is 0.");
+	}
+	else{
+		int distance = i;
+		path[pathIndex] = i;
 		pathIndex++;
-		i = parent[i];
-	}
-	printf("%s's Kevin Bacon number is %d:\n\n",destination_actor,visited[distance]);
-	for(i=0; i<pathIndex-2; i=i+2){
-		printf("%s - %s -> %s\n",storage[path[i]],storage[path[i+2]],storage[path[i+1]]);
-	}
-	if(i==0){
-		printf("Not in the same sub-network.\n");
+		while(parent[i] != -1){
+			path[pathIndex] = parent[i];
+			pathIndex++;
+			i = parent[i];
+		}
+		printf("%s's Kevin Bacon number is %d:\n\n",destination_actor,visited[distance]);
+		for(i=0; i<pathIndex-2; i=i+2){
+			printf("%s - %s -> %s\n",storage[path[i]],storage[path[i+2]],storage[path[i+1]]);
+		}
+		if(i==0){
+				printf("Not in the same sub-network.\n");
+		}
 	}
 }
