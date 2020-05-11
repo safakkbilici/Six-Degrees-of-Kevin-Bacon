@@ -181,48 +181,6 @@ int numberOfVertex(FILE* fp){
 	}
 	return nVertex;
 }
-/*
-int numberOfVertex(FILE* fp){
-	int nVertex=0;
-	char ch;
-	char buffer[100];
-	int i=0;
-	int j = 0;
-	int first = 0;
-	while(!feof(fp)){
-		//printf("%d\n",nVertex);
-		fscanf(fp,"%c",&ch);
-		if(ch!='/'){
-			if(ch!='\n'){
-				buffer[i] = ch;
-				i++;
-			}
-		}
-		if(ch=='/' || ch=='\n'){
-			j=0;
-			if(first==0){
-				first++;
-				strcpy(storage[0],buffer);
-				nVertex++;
-			}
-			else{
-				while(j<nVertex && strcmp(storage[j],buffer)!=0){
-					j++;
-				}
-				if(j==nVertex){
-					strcpy(storage[j],buffer);
-					nVertex++;
-				}
-			}
-			for(int k=0; k<100; k++){
-			buffer[k] = '\0';
-			}
-			i=0;
-		}
-	}
-	printf("\n");
-	return nVertex-1;
-}*/
 void printGraph(GRAPH* _graph, int n){
   GRAPH* current = _graph;
 	int i;
