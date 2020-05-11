@@ -16,5 +16,7 @@ The computation of a Bacon number for actor X is a "shortest path" algorithm, ap
 - Input format is in:
     
     Movie1(year)/surname_actor1, name_actor1/surname_actor2, name_actor2
+    
     Movie2(year)/surname_actor3, name_actor3/surname_actor4, name_actor4
+    
 - Algorithm converts data into Undirected Bipartite Graph after find that what is the Vertex number of this graph.
