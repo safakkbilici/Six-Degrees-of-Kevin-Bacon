@@ -9,7 +9,6 @@ struct node{
 	char movie_actor[200];
 	int visited;
 	struct node* next;
-	int ctrlMovie;
 };
 
 struct graph{
@@ -19,10 +18,15 @@ struct graph{
 struct queue{
 	int vertex;
 	char movie_actor[200];
-	int visited;
 	struct queue* next;
 };
-
+struct linkedlist{
+  struct linkedlist* next;,
+  char name[100];
+  char path[1000];
+};
+  
+typedef struct linkedlist LL;
 typedef struct queue QUEUE;
 typedef struct node NODE;
 typedef struct graph GRAPH;
@@ -36,20 +40,21 @@ QUEUE* dequeue(QUEUE**);
 void BreadthFirstSearch(GRAPH**,char*,int,int*,int*);
 int findMaxDistance(int,int*);
 int* frequencyListOfKevinBaconNumbers(GRAPH*,int,int,int*);
-void shortestDistance(GRAPH*,char*,int,int*,int*,char*);
-void specificBreadthFirstSearch(GRAPH**,char*,char*,int,int*,int*);
-int searchInformation(char*);
+void update(LL**, char*);
+void insert(LL**,char*);
+void shortestDistance(GRAPH*,char*,int,int*,int*,char*,LL**);
 int main(int argc, char** argv){
 	char filename[100];
 	printf("Enter the file name: ");
-  scanf("%s",filename);
+	scanf("%s",filename);
 	FILE* fp = fopen(filename,"r");
-  if(fp == NULL){
-    fprintf(stderr,"File Error!");
-    exit(0);
-  }
+	if(fp == NULL){
+	  fprintf(stderr,"File Error!");
+	  exit(0);
+	}
 	printf("\n");
 
+	LL* head = (LL*)malloc(sizeof(LL));
 	int i;
 	printf("It can take minutes, calculating...");
 	int n = numberOfVertex(fp);
@@ -73,7 +78,7 @@ int main(int argc, char** argv){
 	printf("----------------------------------------------------------------------------------------------------");
 	printf("\n");
 	while(strcmp(destination_actor,"quit") != 0){
-		shortestDistance(_graph,"Bacon, Kevin",n,visited,parent,destination_actor);
+	  shortestDistance(_graph,"Bacon, Kevin",n,visited,parent,destination_actor,&head);
 		printf("\n");
 		printf("----------------------------------------------------------------------------------------------------\n");
 		printf("To quit the program, type quit to actor's/actress's name.\n");
@@ -85,7 +90,22 @@ int main(int argc, char** argv){
 	}
 	return 0;
 }
-
+void update(LL** current, char path [10000]){
+  strcat((*current)->path,path);
+}
+void insert(LL** head, char name[100]){
+  LL* newNode = (LL*)malloc(sizeof(LL));
+  strcpy(newNode->name,name);
+  if(*head == NULL){
+    *head = newNode;
+    newNode->next = NULL;
+  }
+  else{
+    newNode->next = *head;
+    *head = newNode;
+  }
+}
+    
 NODE* createNode(int vertex, char* movie_actor){
 	NODE* newNode = (NODE*)malloc(sizeof(NODE));
 	newNode->vertex = vertex;
@@ -139,13 +159,6 @@ GRAPH* addEdge(int nVertices,char filename[]){
 				newNode = createNode(i,ptr2);
 				newNode->next = _graph->adjList[j];
 				_graph->adjList[j] = newNode;
-				if(ctrlMovie == 0){
-					newNode->ctrlMovie = 1;
-					ctrlMovie++;
-				}
-				else{
-					newNode->ctrlMovie = 0;
-				}
 				newNode = createNode(j,movie_buffer);
 				newNode->next = _graph->adjList[i];
 				_graph->adjList[i] = newNode;
@@ -156,7 +169,7 @@ GRAPH* addEdge(int nVertices,char filename[]){
 	return _graph;
 }
 
-int numberOfVertex(FILE* fp){
+int numberOfVertex(FILE* fp){r
 	int nVertex=0;
 	char* ptr1;
 	char* ptr2;
@@ -181,6 +194,7 @@ int numberOfVertex(FILE* fp){
 	}
 	return nVertex;
 }
+
 void printGraph(GRAPH* _graph, int n){
   GRAPH* current = _graph;
 	int i;
@@ -313,22 +327,34 @@ int findMaxDistance(int n,int* visited){
 	return max;
 }
 
-void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* parent,char destination_actor[100]){
+void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* parent,char destination_actor[100], LL** head){
 	int i;
-	GRAPH* current = _graph;
+	//	GRAPH* current = _graph;
+	LL* current = *head;
 	int path[10000];
 	int pathIndex=0;
 	int filectrl = 0;
 	char buffer[200];
 	i = 0;
+	while(current != NULL){ 
+	  if(current != NULL && strcmp(current->name,destination_actor) == 0){
+	    printf("Mined from linked list database...");
+	    printf("%s",current->path);
+	    return;
+	  }
+	  current = current->next;
+	}
+	insert(head,destination_actor);
 	while(i<n && strcmp(storage[i],destination_actor) != 0){
 		i++;
 	}
 	if(i == n){
 		printf("The name %s cannot be found in movie data!\n",destination_actor);
+		update(head,"The name cannot be found in movie data!\n");
 	}
 	else if(strcmp(destination_actor,"Bacon, Kevin") == 0){
 		printf("Kevin Bacon's Kevin Bacon Number is 0.");
+		update(head,"Kevin Bacon's Kevin Bacon Number is 0.\n");
 	}
 	else{
 		int distance = i;
@@ -340,10 +366,24 @@ void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* par
 			i = parent[i];
 		}
 		printf("%s's Kevin Bacon number is %d:\n\n",destination_actor,visited[distance]);
+		char bf[20];
+		sprintf(bf,"%d",visited[distance]);
+		update(head,"Kevin Bacon number is : ");
+		update(head,bf);
+		update(head,"\n");
+		char cat[1000];
 		for(i=0; i<pathIndex-2; i=i+2){
+		  update(head,storage[path[i]]);
+		  update(head," - ");
+		  update(head,storage[path[i+2]]);
+		  update(head," -> ");
+		  update(head,storage[path[i+1]]);
+		  update(head,"\n");
+		 
 			printf("%s - %s -> %s\n",storage[path[i]],storage[path[i+2]],storage[path[i+1]]);
 		}
 		if(i==0){
+		  update(head,"Not in the same sub-network.\n");
 				printf("Not in the same sub-network.\n");
 		}
 	}
