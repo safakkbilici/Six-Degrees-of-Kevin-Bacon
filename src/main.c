@@ -21,7 +21,7 @@ struct queue{
 	struct queue* next;
 };
 struct linkedlist{
-  struct linkedlist* next;,
+  struct linkedlist* next;
   char name[100];
   char path[1000];
 };
@@ -57,7 +57,7 @@ int main(int argc, char** argv){
 	LL* head = (LL*)malloc(sizeof(LL));
 	int i;
 	printf("It can take minutes, calculating...");
-	int n = numberOfVertex(fp);
+	int n = numberOfVertex(fp); // vertex sayısı
 	printf("%d\n",n);
 	int* parent = (int*)malloc(n*sizeof(int));
 	for(i =0; i<n; i++){
@@ -115,7 +115,7 @@ NODE* createNode(int vertex, char* movie_actor){
 	return newNode;
 }
 
-GRAPH* createGraph(int nVertices){
+GRAPH* createGraph(int nVertices){ 
 	int i;
 	GRAPH* _graph = (GRAPH*)malloc(sizeof(GRAPH));
  	_graph->nVertex = nVertices;
@@ -126,11 +126,11 @@ GRAPH* createGraph(int nVertices){
 	return _graph;
 }
 GRAPH* addEdge(int nVertices,char filename[]){
-	GRAPH* _graph = createGraph(nVertices);
+	GRAPH* _graph = createGraph(nVertices); 
 	FILE * fp = fopen(filename,"r");
-	NODE* newNode;
+	NODE* newNode; 
 	char* ptr1;
-	char* ptr2;
+	char* ptr2; 
 	char movie_buffer[100];
 	char buffer[10000];
 	int i=0;
@@ -140,7 +140,6 @@ GRAPH* addEdge(int nVertices,char filename[]){
 	i = 0;
 	int j=0;
 	while(fgets(buffer,10000,fp)){
-		int ctrlMovie = 0;
 		j=0;
 		ptr1=strtok(buffer,"\n");
 		ptr2=strtok(ptr1,"/");
@@ -169,7 +168,7 @@ GRAPH* addEdge(int nVertices,char filename[]){
 	return _graph;
 }
 
-int numberOfVertex(FILE* fp){r
+int numberOfVertex(FILE* fp){
 	int nVertex=0;
 	char* ptr1;
 	char* ptr2;
@@ -253,15 +252,15 @@ void BreadthFirstSearch(GRAPH** _graph, char actor[100], int n,int* visited,int*
 		visited[k] = -1;
 	}
 	QUEUE* q = (QUEUE*)malloc(sizeof(QUEUE));
-	QUEUE* returned = (QUEUE*)malloc(sizeof(QUEUE));
+	QUEUE* returned = (QUEUE*)malloc(sizeof(QUEUE)); 
 	GRAPH* current = *_graph;
 	q = NULL;
 	int i=0,j=0;
 	char actors_movies[100];
-  strcpy(actors_movies,actor);
-  while(strcmp(storage[i],actors_movies) != 0){
-  	i++;
-  }
+	strcpy(actors_movies,actor);
+	while(strcmp(storage[i],actors_movies) != 0){
+	  i++;
+	}
 	enqueue(&q,i,actors_movies);
 	visited[i] = 0;
 	returned = dequeue(&q);
@@ -307,7 +306,7 @@ int* frequencyListOfKevinBaconNumbers(GRAPH* _graph,int max,int n,int* visited){
 	return frequency;
 }
 
-int findMaxDistance(int n,int* visited){
+int findMaxDistance(int n,int* visited){ 
 	int i;
 	int max;
 	int start = 0;
@@ -328,12 +327,12 @@ int findMaxDistance(int n,int* visited){
 }
 
 void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* parent,char destination_actor[100], LL** head){
+		
 	int i;
-	//	GRAPH* current = _graph;
+	
 	LL* current = *head;
-	int path[10000];
-	int pathIndex=0;
-	int filectrl = 0;
+	int path[10000]; 
+	int pathIndex=0; /
 	char buffer[200];
 	i = 0;
 	while(current != NULL){ 
@@ -365,12 +364,20 @@ void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* par
 			pathIndex++;
 			i = parent[i];
 		}
-		printf("%s's Kevin Bacon number is %d:\n\n",destination_actor,visited[distance]);
-		char bf[20];
-		sprintf(bf,"%d",visited[distance]);
-		update(head,"Kevin Bacon number is : ");
-		update(head,bf);
-		update(head,"\n");
+		if(visited[distance] != 0){
+			char bf[20];
+			printf("%s's Kevin Bacon number is %d:\n\n",destination_actor,visited[distance]);
+			sprintf(bf,"%d",visited[distance]);
+			update(head,"Kevin Bacon number is : ");
+			update(head,bf);
+			update(head,"\n");
+		}
+		else{
+			update(head,"Kevin Bacon number is infinite:");
+			update(head,"\n");	
+			printf("%s's Kevin Bacon number is infinite:\n\n",destination_actor);
+
+		}	
 		char cat[1000];
 		for(i=0; i<pathIndex-2; i=i+2){
 		  update(head,storage[path[i]]);
