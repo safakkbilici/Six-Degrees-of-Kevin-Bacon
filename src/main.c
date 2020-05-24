@@ -332,7 +332,7 @@ void shortestDistance(GRAPH* _graph,char from[100], int n,int* visited, int* par
 	
 	LL* current = *head;
 	int path[10000]; 
-	int pathIndex=0; /
+	int pathIndex=0;
 	char buffer[200];
 	i = 0;
 	while(current != NULL){ 
