@@ -1,2 +1,4 @@
 #!/bin/bash
-cd src &&gcc main.c -o main && ./main
+cd src 
+gcc main.c -o main
+./main
