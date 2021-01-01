@@ -29,7 +29,8 @@ The computation of a Bacon number for actor X is a "shortest path" algorithm, ap
 chmod 777 run.sh
 ./run.sh
 ```
-![Alt Text](./img/demo.gif)
+<img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="40" height="40" />
+
 
 ## References 
 - https://en.wikipedia.org/wiki/Six_Degrees_of_Kevin_Bacon
