@@ -29,7 +29,7 @@ The computation of a Bacon number for actor X is a "shortest path" algorithm, ap
 chmod 777 run.sh
 ./run.sh
 ```
-<img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" width="40" height="40" />
+<img src="./img/demo.gif" width="40" height="40" />
 
 
 ## References 
